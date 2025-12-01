@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "605409442440",
+    "project_id": "cafeuni-60cad",
+    "storage_bucket": "cafeuni-60cad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605409442440:android:1cb3d5fa1b97a241be7d3d",
+        "android_client_info": {
+          "package_name": "mx.edu.utng.cafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD72WDFE4r9vD2F7kw5zUdxc7RUdodQvro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605409442440:android:99f627c5afe5e252be7d3d",
+        "android_client_info": {
+          "package_name": "mx.edu.utng.cafeteria.cafuni"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD72WDFE4r9vD2F7kw5zUdxc7RUdodQvro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
