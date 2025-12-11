@@ -1,44 +1,66 @@
 package mx.edu.utng.cafe.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import mx.edu.utng.cafe.model.Usuario
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import mx.edu.utng.cafe.ui.components.PromotionCard
-import mx.edu.utng.cafe.ui.components.QuickActionCard
+import mx.edu.utng.cafe.ui.viewmodel.homeViewmodel
 
 @Composable
-fun HomeScreen() {
-    val usuario = Usuario(
-        id = 1,
-        nombre = "María López Hernández",
-        correo = "maria.lopez@universidad.edu",
-        puntosAcumulados = 320,
-        universidad = "Universidad Nacional Autónoma"
-    )
+fun HomeScreen(
+    navController: NavController,
+    viewModel: homeViewmodel = viewModel()
+) {
 
+    // 🔥 NO LO QUITES
+    // Ejecuta cargarDatos() automáticamente al entrar
+    LaunchedEffect(Unit) {
+    }
+
+    val usuario = viewModel.usuario
+    val promociones = viewModel.promos
+    val loading = viewModel.loading
+    val error = viewModel.error
+
+    /* ================= LOADING ================= */
+    if (loading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    /* ================= ERROR ================= */
+    if (error != null) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Error: $error", color = Color.Red)
+        }
+        return
+    }
+
+    /* ================= PANTALLA PRINCIPAL ================= */
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -46,14 +68,12 @@ fun HomeScreen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        /* ========= TARJETA DE USUARIO / PUNTOS ========= */
         item {
-            // Tarjeta de Puntos
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Box(
@@ -61,80 +81,56 @@ fun HomeScreen() {
                         .fillMaxWidth()
                         .background(
                             Brush.horizontalGradient(
-                                colors = listOf(Color(0xFF6200EE), Color(0xFF9C27B0))
+                                listOf(
+                                    Color(0xFF6200EE),
+                                    Color(0xFF9C27B0)
+                                )
                             )
                         )
                         .padding(24.dp)
                 ) {
                     Column {
                         Text(
-                            "Mis Puntos",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 14.sp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "${usuario.puntosAcumulados}",
+                            text = "Hola, ${usuario?.nombre?.toString()}", // <-- Muestra el nombre
                             color = Color.White,
-                            fontSize = 48.sp,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = "Mis puntos:",
+                            color = Color.White,
+                            fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+
                         Text(
-                            "puntos acumulados",
-                            color = Color.White.copy(alpha = 0.8f),
-                            fontSize = 12.sp
+                            text = "${ usuario?.puntosAcumulados?.toString() }",
+                            color = Color.White,
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
         }
 
+        /* ========= PROMOCIONES ========= */
         item {
             Text(
-                "Acciones Rápidas",
+                "Promociones destacadas",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                fontWeight = FontWeight.Bold
             )
         }
 
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                QuickActionCard(
-                    icon = Icons.Default.ShoppingCart,
-                    title = "Comprar",
-                    color = Color(0xFF4CAF50),
-                    modifier = Modifier.weight(1f)
-                )
-                QuickActionCard(
-                    icon = Icons.Default.Star,
-                    title = "Canjear",
-                    color = Color(0xFFFF9800),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        item {
-            Text(
-                "Promociones Destacadas",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        items(2) { index ->
+        items(promociones) { promo ->
             PromotionCard(
-                nombre = if (index == 0) "Descuento 10%" else "Envío Gratis",
-                descripcion = if (index == 0)
-                    "10% de descuento en productos de electrónica"
-                else "Envío gratuito en tu próxima compra",
-                puntos = if (index == 0) 100 else 50
+                nombre = promo.nombre,
+                descripcion = promo.descripcion,
+                puntos = promo.puntosRequeridos.toInt()
             )
         }
     }

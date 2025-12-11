@@ -1,48 +1,158 @@
 package mx.edu.utng.cafe.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import mx.edu.utng.cafe.model.Producto
 import mx.edu.utng.cafe.ui.components.ProductCard
+import mx.edu.utng.cafe.viewModell.ProductoViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreScreen() {
-    val productos = listOf(
-        Producto(1, "Laptop HP Pavilion 15", "Intel i5, 8GB RAM, 256GB SSD", 12999.0, true),
-        Producto(2, "Mouse Logitech MX", "Mouse inalámbrico ergonómico", 1299.0, true),
-        Producto(3, "Audífonos Sony WH-1000XM4", "Cancelación de ruido premium", 5499.0, true),
-        Producto(5, "Monitor Samsung 24\"", "Full HD IPS 24 pulgadas", 3299.0, true)
-    )
+fun StoreScreen(
+    viewModel: ProductoViewModel = viewModel()
+) {
+    val productos by viewModel.productos.collectAsState()
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        item {
-            Text(
-                "Catálogo de Productos",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+    var showDialog by remember { mutableStateOf(false) }
+    var productoEdit by remember { mutableStateOf<Producto?>(null) }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                shape = CircleShape,
+                onClick = {
+                    productoEdit = null
+                    showDialog = true
+                }
+            ) {
+                Text("+", fontSize = 24.sp)
+            }
         }
+    ) { padding ->
 
-        items(productos) { producto ->
-            ProductCard(producto)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            item {
+                Text(
+                    "Catálogo de Productos",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            items(productos, key = { it.id }) { producto ->
+                ProductCard(
+                    producto = producto,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        productoEdit = producto
+                        showDialog = true
+                    }
+                )
+
         }
     }
+}
+
+            if (showDialog) {
+        ProductDialog(
+            producto = productoEdit,
+            onDismiss = { showDialog = false },
+            onSave = {
+                if (it.id.isBlank())
+                    viewModel.addProducto(it)
+                else
+                    viewModel.updateProducto(it)
+
+                showDialog = false
+            },
+            onDelete = {
+                viewModel.deleteProducto(it)
+                showDialog = false
+            }
+        )
+    }
+}
+@Composable
+fun ProductDialog(
+    producto: Producto?,
+    onDismiss: () -> Unit,
+    onSave: (Producto) -> Unit,
+    onDelete: (String) -> Unit
+) {
+
+    var nombre by remember { mutableStateOf(producto?.nombre ?: "") }
+    var descripcion by remember { mutableStateOf(producto?.descripcion ?: "") }
+    var precio by remember { mutableStateOf(producto?.precio?.toString() ?: "") }
+    var disponible by remember { mutableStateOf(producto?.disponible ?: true) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Nuevo Producto") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(nombre, { nombre = it }, label = { Text("Nombre") })
+                OutlinedTextField(descripcion, { descripcion = it }, label = { Text("Descripción") })
+                OutlinedTextField(
+                    value = precio,
+                    onValueChange = { precio = it.filter { c -> c.isDigit() || c == '.' } },
+                    label = { Text("Precio") }
+                )
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Checkbox(checked = disponible, onCheckedChange = { disponible = it })
+                    Text("Disponible")
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                onSave(
+                    Producto(
+                        id = producto?.id ?: "",
+                        nombre = nombre,
+                        descripcion = descripcion,
+                        precio = precio.toDoubleOrNull() ?: 0.0,
+                        disponible = disponible
+                    )
+                )
+            }) {
+                Text("Guardar")
+            }
+        },
+        dismissButton = {
+            Row {
+                    TextButton(
+                        onClick = { onDelete(producto?.id?:"") },
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text("Eliminar")
+                    }
+
+                Spacer(Modifier.width(8.dp))
+                TextButton(onClick = onDismiss) {
+                    Text("Cancelar")
+                }
+            }
+        }
+    )
 }

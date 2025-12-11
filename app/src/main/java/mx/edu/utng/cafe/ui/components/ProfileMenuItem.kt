@@ -22,7 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ProfileMenuItem(icon: ImageVector, title: String, color: Color = Color.Black) {
+fun ProfileMenuItem(
+    icon: ImageVector,
+    title: String,
+    color: Color = Color.Black,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),

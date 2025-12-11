@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,16 +33,16 @@ import androidx.compose.ui.unit.sp
 import mx.edu.utng.cafe.model.Promocion
 
 @Composable
-fun PromoCard(promocion: Promocion) {
+fun PromoCard(promocion: Promocion, onClick: () -> Unit, modifier: Modifier) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -87,7 +86,7 @@ fun PromoCard(promocion: Promocion) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -99,16 +98,6 @@ fun PromoCard(promocion: Promocion) {
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF6200EE)
                     )
-                }
-
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF6200EE)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Canjear")
                 }
             }
 

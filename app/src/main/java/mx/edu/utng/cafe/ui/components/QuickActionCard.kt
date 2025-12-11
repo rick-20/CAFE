@@ -26,7 +26,8 @@ fun QuickActionCard(
     icon: ImageVector,
     title: String,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    function: () -> Unit
 ) {
     Card(
         modifier = modifier.height(100.dp),

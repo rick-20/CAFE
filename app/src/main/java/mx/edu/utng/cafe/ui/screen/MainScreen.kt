@@ -26,10 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Inicio", "Tienda", "Promociones", "Pedidos", "Perfil")
     val icons = listOf(
@@ -43,7 +45,7 @@ fun MainScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("UniPoints", fontWeight = FontWeight.Bold) },
+                title = { Text("CafeUni", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF6200EE),
                     titleContentColor = Color.White
@@ -68,10 +70,12 @@ fun MainScreen() {
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             when (selectedTab) {
-                0 -> HomeScreen()
+                0 -> HomeScreen(navController, viewModel())
                 1 -> StoreScreen()
                 2 -> PromotionsScreen()
-                3 -> OrdersScreen()
+                3 -> OrdersScreen(
+                    userId = ""
+                )
                 4 -> ProfileScreen()
             }
         }

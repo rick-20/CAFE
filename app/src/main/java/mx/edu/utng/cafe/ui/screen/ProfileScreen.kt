@@ -15,15 +15,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,18 +31,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import mx.edu.utng.cafe.model.Usuario
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import mx.edu.utng.cafe.ui.components.ProfileMenuItem
+import mx.edu.utng.cafe.viewModell.UsuarioViewModel
 
 @Composable
-fun ProfileScreen() {
-    val usuario = Usuario(
-        id = 2,
-        nombre = "María López Hernández",
-        correo = "maria.lopez@utng.edu.mx",
-        puntosAcumulados = 320,
-        universidad = "UTNG"
-    )
+fun ProfileScreen(navController: NavController, viewModel: UsuarioViewModel = viewModel()) {
+    LaunchedEffect(Unit) {
+        viewModel.loadCurrentUser()
+    }
+
+    val usuario = viewModel.usuario
+    val loading = viewModel.loading
+
+    if (loading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    /*if (usuario == null) {
+        Text("No se pudo cargar el perfil")
+        return
+    }*/
 
     LazyColumn(
         modifier = Modifier
@@ -52,17 +67,15 @@ fun ProfileScreen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(4.dp)
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
+                    modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
@@ -71,13 +84,19 @@ fun ProfileScreen() {
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
-                                    colors = listOf(Color(0xFF6200EE), Color(0xFF9C27B0))
+                                    listOf(
+                                        Color(0xFF6200EE),
+                                        Color(0xFF9C27B0)
+                                    )
                                 )
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            usuario.nombre.split(" ").take(2).joinToString("") { it.first().toString() },
+                            "${ usuario?.nombre }"
+                                .split(" ")
+                                .take(2)
+                                .joinToString("") { it.first().toString() },
                             color = Color.White,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
@@ -86,18 +105,8 @@ fun ProfileScreen() {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        usuario.nombre,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        usuario.correo,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                    Text("${ usuario?.nombre }", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("${ usuario?.correo }", fontSize = 14.sp, color = Color.Gray)
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -106,43 +115,42 @@ fun ProfileScreen() {
                         color = Color(0xFF6200EE).copy(alpha = 0.1f)
                     ) {
                         Text(
-                            usuario.universidad,
+                            "${ usuario?.universidad }",
                             fontSize = 12.sp,
                             color = Color(0xFF6200EE),
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            modifier = Modifier.padding(8.dp)
                         )
                     }
                 }
             }
         }
 
+        item { Text("Configuración", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
+
         item {
-            Text(
-                "Configuración",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
+            ProfileMenuItem(
+            Icons.Default.Person, "Editar Perfil",
+            Color.Blue,
+            onClick = {
+                viewModel
+            },
+        ) }
+
+        item {
+            ProfileMenuItem(
+                Icons.Default.ExitToApp,
+                "Cerrar Sesión",
+                Color.Red,
+                onClick ={
+                    viewModel.logout()
+                    navController.navigate("login_route") {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+
+                }
             )
-        }
-
-        item {
-            ProfileMenuItem(Icons.Default.Person, "Editar Perfil")
-        }
-
-        item {
-            ProfileMenuItem(Icons.Default.Notifications, "Notificaciones")
-        }
-
-        item {
-            ProfileMenuItem(Icons.Default.Lock, "Privacidad y Seguridad")
-        }
-
-        item {
-            ProfileMenuItem(Icons.Default.Info, "Ayuda y Soporte")
-        }
-
-        item {
-            ProfileMenuItem(Icons.Default.ExitToApp, "Cerrar Sesión", Color.Red)
         }
     }
 }
