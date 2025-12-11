@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +66,8 @@ fun StoreScreen(
                     onClick = {
                         productoEdit = producto
                         showDialog = true
-                    }
+                    },
+                    onDelete = {producto.id}
                 )
 
         }
@@ -116,7 +118,7 @@ fun ProductDialog(
                     onValueChange = { precio = it.filter { c -> c.isDigit() || c == '.' } },
                     label = { Text("Precio") }
                 )
-                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = disponible, onCheckedChange = { disponible = it })
                     Text("Disponible")
                 }
@@ -135,23 +137,6 @@ fun ProductDialog(
                 )
             }) {
                 Text("Guardar")
-            }
-        },
-        dismissButton = {
-            Row {
-                    TextButton(
-                        onClick = { onDelete(producto?.id?:"") },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
-                    ) {
-                        Text("Eliminar")
-                    }
-
-                Spacer(Modifier.width(8.dp))
-                TextButton(onClick = onDismiss) {
-                    Text("Cancelar")
-                }
             }
         }
     )

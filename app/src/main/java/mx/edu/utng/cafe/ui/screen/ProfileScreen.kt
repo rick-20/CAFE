@@ -1,5 +1,6 @@
 package mx.edu.utng.cafe.ui.screen
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import mx.edu.utng.cafe.navigation.CafeNavigation
+import mx.edu.utng.cafe.navigation.CafeUniScreens
 import mx.edu.utng.cafe.ui.components.ProfileMenuItem
 import mx.edu.utng.cafe.viewModell.UsuarioViewModel
 
@@ -105,7 +109,7 @@ fun ProfileScreen(navController: NavController, viewModel: UsuarioViewModel = vi
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("${ usuario?.nombre }", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("${usuario?.nombre}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text("${ usuario?.correo }", fontSize = 14.sp, color = Color.Gray)
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -132,7 +136,8 @@ fun ProfileScreen(navController: NavController, viewModel: UsuarioViewModel = vi
             Icons.Default.Person, "Editar Perfil",
             Color.Blue,
             onClick = {
-                viewModel
+                navController.navigate(CafeUniScreens.EditProfileScreen.name){
+                }
             },
         ) }
 
@@ -143,7 +148,7 @@ fun ProfileScreen(navController: NavController, viewModel: UsuarioViewModel = vi
                 Color.Red,
                 onClick ={
                     viewModel.logout()
-                    navController.navigate("login_route") {
+                    navController.navigate(CafeUniScreens.LoginScreen.name) {
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
@@ -151,6 +156,7 @@ fun ProfileScreen(navController: NavController, viewModel: UsuarioViewModel = vi
 
                 }
             )
+
         }
     }
 }

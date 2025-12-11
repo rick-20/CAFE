@@ -66,7 +66,7 @@ fun EditProfileScreen(
             OutlinedTextField(
                 value = nombreText,
                 onValueChange = { nombreText = it },
-                label = { Text("Nombre Completo") },
+                label = { Text("Nombre: ${usuario.nombre}") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -75,7 +75,7 @@ fun EditProfileScreen(
             OutlinedTextField(
                 value = universidadText,
                 onValueChange = { universidadText = it },
-                label = { Text("Universidad") },
+                label = { Text("Universidad: ${usuario.universidad}") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -97,7 +97,7 @@ fun EditProfileScreen(
                         isSaving = true
 
                         // Llamar a la función del ViewModel para guardar en Firebase
-                        viewModel.updateUsuario(
+                        viewModel.updateUser(
                             nuevoNombre = nombreText,
                             nuevaUniversidad = universidadText
                         )

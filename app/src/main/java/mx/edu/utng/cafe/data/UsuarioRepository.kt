@@ -110,12 +110,12 @@ suspend fun obtenerUsuario(idU: String): Usuario? {
         return snapshot.toObject(Usuario::class.java)
     }
 
-    suspend fun obtenerUsuarioLogueado(uid : String): Usuario? {
+    suspend fun obtenerUsuarioLogueado(): Usuario? {
         val uid = FirebaseAuth.getInstance().currentUser?.uid
-           // ?: return null   // No hay usuario logueado
+            ?: return null
 
         val snapshot = db.collection("users")
-            .document()
+            .document(uid)
             .get()
             .await()
 

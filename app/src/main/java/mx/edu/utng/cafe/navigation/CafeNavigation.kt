@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import mx.edu.utng.cafe.ui.screen.EditProfileScreen
 import mx.edu.utng.cafe.ui.screen.HomeScreen
 import mx.edu.utng.cafe.ui.screen.MainScreen
 import mx.edu.utng.cafe.ui.screen.ProfileScreen
@@ -26,14 +27,11 @@ fun CafeNavigation(){
         composable(CafeUniScreens.MainScreen.name){
             MainScreen(navController = navController)
         }
-        composable("profile_route") {
-            // 🔥 AQUÍ DEBES PASAR EL navController QUE TIENES ARRIBA
-            ProfileScreen(navController = navController)
-        }
-
-        // 3. Definición de otras rutas que también lo necesiten
-        composable("edit_profile_route") {
+        composable(CafeUniScreens.EditProfileScreen.name) {
             EditProfileScreen(navController = navController)
         }
+        /*composable("edit_profile_route") {
+            EditProfileScreen(navController = navController)
+        }*/
     }
 }

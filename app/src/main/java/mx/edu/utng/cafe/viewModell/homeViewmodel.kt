@@ -56,9 +56,7 @@ class homeViewmodel(
                 error = null
 
                 // 🔥 Obtener usuario del UID autenticado
-                usuario = usuarioRepo.obtenerUsuarioLogueado(
-                    uid = uid
-                )
+                usuario = usuarioRepo.obtenerUsuarioLogueado()
 
                 // 🔥 Obtener promociones
                 val result = promocionRepo.getAllPromocionesOnce(Promocion())

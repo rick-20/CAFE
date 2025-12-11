@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import mx.edu.utng.cafe.viewModell.UsuarioViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,10 +74,8 @@ fun MainScreen(navController: NavController) {
                 0 -> HomeScreen(navController, viewModel())
                 1 -> StoreScreen()
                 2 -> PromotionsScreen()
-                3 -> OrdersScreen(
-                    userId = ""
-                )
-                4 -> ProfileScreen()
+                3 -> OrdersScreen(userId = "")
+                4 -> ProfileScreen(navController, viewModel())
             }
         }
     }
